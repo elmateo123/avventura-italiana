@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avventura Italiana | Route Planner</title>
+    <meta name="description" content="Advanced Travel Route Planner with up to 25 stops and custom color-coding.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app-container">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <header>
+                <h1>Avventura<span>Italiana</span></h1>
+                <p>Curated Epic Journeys</p>
+            </header>
+
+            <div class="search-section">
+                <input type="text" id="pac-input" placeholder="Search for a stop (e.g., Denver, CO)">
+                <button id="add-stop-btn" title="Add location to route">+</button>
+            </div>
+
+            <div id="active-route-header" class="active-route-header">
+                <span class="route-icon">🗺️</span>
+                <h2 id="route-title-display">New Journey</h2>
+            </div>
+
+            <div id="stops-list" class="scrollable">
+                <!-- Stops will iterate here -->
+            </div>
+
+            <div id="sidebar-actions" class="sidebar-actions">
+                <div class="mode-buttons-group">
+                    <button id="set-mode-driving" class="mode-btn active" data-mode="DRIVING" title="Driving">🚗</button>
+                    <button id="set-mode-transit" class="mode-btn" data-mode="TRANSIT" title="Bus & Train">🚆</button>
+                </div>
+                <div class="actions-group">
+                    <button id="save-route-trigger" class="icon-btn" title="Save Route">💾</button>
+                    <button id="toggle-drawer-btn" class="icon-btn" title="Route History">🕒</button>
+                    <button id="new-route-btn" class="icon-btn danger" title="Reset / New Route">🗑️</button>
+                </div>
+                <button id="calculate-btn" class="calculate-action-btn">GO</button>
+            </div>
+
+            <!-- New dedicated Confirmation Row -->
+            <div id="reset-confirmation" class="sidebar-actions hidden">
+                <p class="confirm-msg">Clear route?</p>
+                <div class="confirm-actions">
+                    <button id="confirm-reset-yes" class="confirm-btn yes">Yes, Clear</button>
+                    <button id="confirm-reset-no" class="confirm-btn no">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Save Modal (Appears when saving) -->
+            <div id="save-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h4 id="save-modal-title">Save Journey</h4>
+                    
+                    <div id="overwrite-section" class="hidden">
+                        <button id="overwrite-save-btn" class="calculate-action-btn" style="margin-bottom: 1rem;">Update Existing Route</button>
+                        <div style="text-align: center; margin-bottom: 1rem; color: var(--text-muted); font-size: 0.8rem;">— or Save As New —</div>
+                    </div>
+
+                    <input type="text" id="route-name-input" placeholder="Name your epic route...">
+                    <div class="modal-buttons">
+                        <button id="confirm-save-btn" class="calculate-action-btn">Save New</button>
+                        <button id="cancel-save-btn" class="icon-btn" style="border-radius: 8px; width: auto; padding: 0 15px;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Saved Routes Drawer -->
+        <div id="routes-drawer" class="drawer hidden">
+            <div class="drawer-header">
+                <h3>Route History</h3>
+                <button id="close-drawer-btn">×</button>
+            </div>
+            <div id="saved-routes-list" class="scrollable"></div>
+        </div>
+
+        <!-- Map Area -->
+        <main id="map-area">
+            <div id="map"></div>
+            
+            <!-- Summary Stats Pill (Recommendation 3) -->
+            <div id="floating-stats" class="summary-pill hidden">
+                <div class="pill-section">
+                    <span class="pill-val" id="total-days">0 Days</span>
+                    <span class="pill-label">Length</span>
+                </div>
+                <div class="pill-divider"></div>
+                <div class="pill-section">
+                    <span class="pill-val" id="total-distance">0 mi</span>
+                    <span class="pill-label">Total</span>
+                </div>
+                <div class="pill-divider"></div>
+                <div class="pill-section">
+                    <span class="pill-val" id="total-time">0m</span>
+                    <span class="pill-label">Time</span>
+                </div>
+                <div class="pill-divider"></div>
+                <div class="pill-section">
+                    <span class="pill-val" id="avg-speed">0 mph</span>
+                    <span class="pill-label">Speed</span>
+                </div>
+            </div>
+
+            <div id="loading-overlay" class="hidden">
+                <div class="loader"></div>
+                <p>Generating Route Polylines...</p>
+            </div>
+            <!-- Map Controls Overlay -->
+            <div id="map-controls">
+                <button id="satellite-toggle" class="map-btn">Satellite View</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toasts -->
+    <div id="toast-container"></div>
+
+    <!-- Generic Confirmation Modal -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h4 id="confirm-modal-title">Confirm Action</h4>
+            <p id="confirm-modal-msg" style="margin-bottom: 2rem; color: var(--text-muted); font-size: 0.9rem;"></p>
+            <div class="modal-buttons" style="flex-direction: column; gap: 10px;">
+                <button id="confirm-action-yes" class="calculate-action-btn danger">Yes, Proceed</button>
+                <button id="confirm-action-no" class="icon-btn" style="border-radius: 8px; width: auto; padding: 10px 15px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPLACE 'YOUR_API_KEY' WITH YOUR ACTUAL GOOGLE MAPS API KEY -->
+    <!-- Recommended APIs: Maps JS API, Places API, Directions API -->
+    <script src="app.js?v=22"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7uilweTs-Oo-n1pTFnIH4-WVdMo4sD2E&libraries=places&callback=initMap"></script>
+</body>
+
+</html>
