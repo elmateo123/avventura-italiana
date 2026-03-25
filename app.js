@@ -108,6 +108,16 @@ function initMap() {
 
     renderSavedRoutes();
     updateRouteTitleUI();
+
+    // Initialize Travel Log Extension (Modular)
+    if (window.TravelLog) {
+        window.TravelLog.init().then(() => {
+            if (window.TravelLogUI) {
+                window.TravelLogUI.init(document.getElementById('travellog-sidebar'), map);
+                window.TravelLog.startSyncInterval(30000); // Check every 30s
+            }
+        });
+    }
 }
 
 // ── Route Title UI ──────────────────────────────────────────────────────────

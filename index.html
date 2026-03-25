@@ -57,6 +57,9 @@
                 </div>
             </div>
 
+            <!-- Travel Log Sidebar Section -->
+            <div id="travellog-sidebar"></div>
+
             <!-- Save Modal (Appears when saving) -->
             <div id="save-modal" class="modal hidden">
                 <div class="modal-content">
@@ -140,6 +143,10 @@
 
     <!-- REPLACE 'YOUR_API_KEY' WITH YOUR ACTUAL GOOGLE MAPS API KEY -->
     <!-- Recommended APIs: Maps JS API, Places API, Directions API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="googleDriveManager.js"></script>
+    <script src="travelLog.js"></script>
+    <script src="travelLogUI.js"></script>
     <script src="app.js?v=22"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7uilweTs-Oo-n1pTFnIH4-WVdMo4sD2E&libraries=places&callback=initMap"></script>
 </body>
